@@ -1,2 +1,2 @@
-# CS446-N2D2
+# cs446-n2d2
 CS446 Android Term Project
