@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background_light"
+    tools:context=".MainActivity">
+
+    <ImageButton
+        android:id="@+id/alphabetButton"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="108dp"
+        android:background="@drawable/white_round_corners_button"
+        android:elevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_library_books_24px" />
+
+    <ImageButton
+        android:id="@+id/accountButton"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/white_round_corners_button"
+        android:elevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alphabetButton"
+        app:srcCompat="@drawable/person" />
+
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="60dp"
+        android:background="@drawable/white_round_corners_button"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/playButton"
+        app:srcCompat="@drawable/ic_baseline_settings_20px" />
+
+    <ImageButton
+        android:id="@+id/playButton"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="108dp"
+        android:layout_marginEnd="60dp"
+        android:background="@drawable/white_round_corners_button"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/play_arrow" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif-black"
+        android:text="@string/app_name"
+        android:textAllCaps="true"
+        android:textColor="@color/White"
+        android:typeface="sans"
+        app:layout_constraintEnd_toStartOf="@+id/settingsButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/accountButton"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
