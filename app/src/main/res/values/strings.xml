@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Glossa</string>
+    <string name="app_caption">Talk to the world.</string>
+    <string name="alphabet_button_text">Alphabet</string>
+    <string name="account_button_text">Account</string>
+    <string name="settings_button_text">Settings</string>
 </resources>
