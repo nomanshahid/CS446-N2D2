@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private ArrayList<LanguageItem> languageList;
     private LanguageSpinnerAdapter languageSpinnerAdapter;
+    private String languageSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 LanguageItem clickedItem = (LanguageItem)adapterView.getItemAtPosition(i);
 
                 //TODO: Update language selection in app
-                String clickedLanguageName = clickedItem.getLanguageName();
-                Toast.makeText(MainActivity.this, clickedLanguageName + " selected!", Toast.LENGTH_SHORT).show();
+                languageSelection = clickedItem.getLanguageName();;
             }
 
             @Override
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void openAlphabet() {
         Intent intent = new Intent(getApplicationContext(), Alphabet.class);
+        intent.putExtra("language_selection", languageSelection);
         startActivity(intent);
     }
 
