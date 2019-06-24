@@ -8,14 +8,42 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    private ArrayList<LanguageItem> languageList;
+    private LanguageSpinnerAdapter languageSpinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initLanguageList();
+        Spinner languageSpinner = findViewById(R.id.languageSpinner);
+        languageSpinnerAdapter = new LanguageSpinnerAdapter(this, languageList);
+        languageSpinner.setAdapter(languageSpinnerAdapter);
+
+        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                LanguageItem clickedItem = (LanguageItem)adapterView.getItemAtPosition(i);
+
+                //TODO: Update language in app
+                String clickedLanguageName = clickedItem.getLanguageName();
+                Toast.makeText(MainActivity.this, clickedLanguageName + " selected!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // Add click listeners for buttons
         ImageButton play = findViewById(R.id.playButton);
@@ -53,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
-
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
@@ -75,5 +102,12 @@ public class MainActivity extends AppCompatActivity {
     public void openSettings() {
         Intent intent = new Intent(getApplicationContext(), Settings.class);
         startActivity(intent);
+    }
+
+    private void initLanguageList(){
+        languageList = new ArrayList<>();
+        languageList.add(new LanguageItem(this.getResources().getString(R.string.korean_text), R.drawable.south_korea_flag));
+        languageList.add(new LanguageItem(this.getResources().getString(R.string.english_text), R.drawable.uk_flag));
+        languageList.add(new LanguageItem(this.getResources().getString(R.string.french_text), R.drawable.france_flag));
     }
 }
