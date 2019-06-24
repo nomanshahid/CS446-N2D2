@@ -4,4 +4,7 @@
     <string name="alphabet_button_text">Alphabet</string>
     <string name="account_button_text">Account</string>
     <string name="settings_button_text">Settings</string>
+    <string name="korean_text">Korean</string>
+    <string name="english_text">English</string>
+    <string name="french_text">French</string>
 </resources>
