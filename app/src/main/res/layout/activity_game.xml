@@ -7,4 +7,136 @@
     android:background="@drawable/gradient_background_light_2"
     tools:context=".Game">
 
+    <TextView
+        android:id="@+id/max_level"
+        android:layout_width="51dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="viewStart"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/static_character_text"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_option_1"
+        android:layout_width="251dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="36dp"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/game_option_button"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_character" />
+
+    <Button
+        android:id="@+id/btn_option_2"
+        android:layout_width="251dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="8dp"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/game_option_button"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_option_1" />
+
+    <Button
+        android:id="@+id/btn_option_3"
+        android:layout_width="251dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="8dp"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/game_option_button"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_option_2" />
+
+    <TextView
+        android:id="@+id/game_title_text"
+        android:layout_width="121dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/roboto_mono_light"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/White"
+        android:textSize="30sp"
+        android:textStyle="bold|italic"
+        android:typeface="sans"
+        app:layout_constraintEnd_toStartOf="@+id/curr_level"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/game_character"
+        android:layout_width="279dp"
+        android:layout_height="231dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/game_character"
+        android:textAlignment="center"
+        android:textColor="#FAE7E0"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_language_label" />
+
+    <TextView
+        android:id="@+id/game_language_label"
+        android:layout_width="263dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="52dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_title_text" />
+
+    <TextView
+        android:id="@+id/game_character_text"
+        android:layout_width="193dp"
+        android:layout_height="165dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:animateLayoutChanges="true"
+        android:textAlignment="center"
+        android:textSize="120sp"
+        app:layout_constraintBottom_toBottomOf="@+id/game_character"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/game_language_label"
+        app:layout_constraintVertical_bias="0.529" />
+
+    <TextView
+        android:id="@+id/curr_level"
+        android:layout_width="42dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="64dp"
+        android:textAlignment="textEnd"
+        android:text="0"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/max_level"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/static_character_text"
+        android:layout_width="100dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="16dp"
+        android:text="Characters"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

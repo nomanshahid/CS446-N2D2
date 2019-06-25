@@ -1,34 +1,9 @@
 package dylandesrosier.glossa;
 
 import android.content.Context;
-
 import java.util.HashMap;
 
 public class Language {
-    public class Letter {
-        private Character character;
-        private String pronunciation;
-        private String category;
-
-        public Letter(Character character, String pronunciation, String category){
-            this.character = character;
-            this.pronunciation = pronunciation;
-            this.category = category;
-        }
-
-        public Character getCharacter() {
-            return character;
-        }
-
-        public String getPronunciation() {
-            return pronunciation;
-        }
-
-        public String getCategory() {
-            return category;
-        }
-    }
-
     public class Word {
         private String word;
         private String pronunciation;

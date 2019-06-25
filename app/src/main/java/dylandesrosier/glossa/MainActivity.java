@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void openGame() {
         Intent intent = new Intent(getApplicationContext(), Game.class);
+        intent.putExtra("language_selection", languageSelection);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
 

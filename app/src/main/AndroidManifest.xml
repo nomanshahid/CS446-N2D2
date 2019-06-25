@@ -11,9 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Account"></activity>
+        <activity android:name=".Account" />
         <activity android:name=".Settings" />
         <activity android:name=".Game" />
+        <activity android:name=".GameOver" />
         <activity android:name=".Alphabet" />
         <activity android:name=".MainActivity">
             <intent-filter>
