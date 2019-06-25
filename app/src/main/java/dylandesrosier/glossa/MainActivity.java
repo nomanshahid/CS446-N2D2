@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void openGame() {
         Intent intent = new Intent(getApplicationContext(), Game.class);
+        intent.putExtra("language_selection", languageSelection);
         startActivity(intent);
     }
 

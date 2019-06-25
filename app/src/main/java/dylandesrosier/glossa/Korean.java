@@ -13,7 +13,7 @@ public class Korean extends Language {
         letters.put('ㅁ', new Letter('ㅁ', "ma", "Consonant"));
         letters.put('ㅂ', new Letter('ㅂ', "ba", "Consonant"));
         letters.put('ㅅ', new Letter('ㅅ', "sa", "Consonant"));
-        letters.put('ㅇ', new Letter('ㅇ', "ng", "Consonant"));
+        letters.put('ㅇ', new Letter('ㅇ', "ah", "Consonant"));
         letters.put('ㅈ', new Letter('ㅈ', "ja", "Consonant"));
         letters.put('ㅊ', new Letter('ㅊ', "cha", "Consonant"));
         letters.put('ㅋ', new Letter('ㅋ', "ka", "Consonant"));
