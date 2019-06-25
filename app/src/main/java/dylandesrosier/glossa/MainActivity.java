@@ -11,13 +11,13 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<LanguageItem> languageList;
     private LanguageSpinnerAdapter languageSpinnerAdapter;
+    private String languageSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +34,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 LanguageItem clickedItem = (LanguageItem)adapterView.getItemAtPosition(i);
 
-                //TODO: Update language in app
-                String clickedLanguageName = clickedItem.getLanguageName();
-                Toast.makeText(MainActivity.this, clickedLanguageName + " selected!", Toast.LENGTH_SHORT).show();
+                //TODO: Update language selection in app
+                languageSelection = clickedItem.getLanguageName();
             }
 
             @Override
@@ -86,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void openAlphabet() {
         Intent intent = new Intent(getApplicationContext(), Alphabet.class);
+        intent.putExtra("language_selection", languageSelection);
         startActivity(intent);
     }
 
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private void initLanguageList(){
         languageList = new ArrayList<>();
         languageList.add(new LanguageItem(this.getResources().getString(R.string.korean_text), R.drawable.south_korea_flag));
+        languageList.add(new LanguageItem(this.getResources().getString(R.string.bengali_text), R.drawable.bangladesh_flag));
         languageList.add(new LanguageItem(this.getResources().getString(R.string.english_text), R.drawable.uk_flag));
-        languageList.add(new LanguageItem(this.getResources().getString(R.string.french_text), R.drawable.france_flag));
     }
 }

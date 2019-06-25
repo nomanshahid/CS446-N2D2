@@ -6,5 +6,8 @@
     <string name="settings_button_text">Settings</string>
     <string name="korean_text">Korean</string>
     <string name="english_text">English</string>
-    <string name="french_text">French</string>
+    <string name="bengali_text">Bengali</string>
+    <string name="alphabet_pronunciation">Pronunciation:</string>
+    <string name="consonant_text">Consonant</string>
+    <string name="vowel_text">Vowel</string>
 </resources>
