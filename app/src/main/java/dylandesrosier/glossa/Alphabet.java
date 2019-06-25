@@ -4,6 +4,8 @@ import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -25,17 +27,25 @@ public class Alphabet extends AppCompatActivity {
 
         switch (languageSelection){
             case "Korean":
-                language = new Korean();
+                language = new Korean(this);
+                break;
             default:
-                language = new Korean();
+                language = new Language(this);
         }
 
+        // Add letters to linear layout
         LinearLayout alphabetLayout = findViewById(R.id.alphabetLayout);
-
         for (Character letter : language.getLetters().keySet()) {
-            TextView tv = new TextView(this);
-            tv.setText("letter: " + letter + " Pronunciation: " + language.getLetters().get(letter).getPronunciation());
-            alphabetLayout.addView(tv);
+            View alphabetRowLayout = LayoutInflater.from(this).inflate(R.layout.alphabet_row, null, false);
+
+            TextView letterTextView =  alphabetRowLayout.findViewById(R.id.letterTextView);
+            TextView pronunciationTextView =  alphabetRowLayout.findViewById(R.id.pronunciationTextView);
+            TextView categoryTextView =  alphabetRowLayout.findViewById(R.id.categoryTextView);
+
+            letterTextView.setText(Character.toString(letter));
+            pronunciationTextView.setText(language.getLetters().get(letter).getPronunciation());
+            categoryTextView.setText(language.getLetters().get(letter).getCategory());
+            alphabetLayout.addView(alphabetRowLayout);
         }
 
         // Set the status bar to be transparent and lock app to portrait

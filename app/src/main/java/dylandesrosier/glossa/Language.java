@@ -1,5 +1,7 @@
 package dylandesrosier.glossa;
 
+import android.content.Context;
+
 import java.util.HashMap;
 
 public class Language {
@@ -53,8 +55,10 @@ public class Language {
 
     protected HashMap<Character, Letter> letters;
     protected HashMap<String, Word> words;
+    protected Context context;
 
-    public Language () {
+    public Language (Context context) {
+        this.context = context;
         letters = new HashMap<>();
         words = new HashMap<>();
     }
