@@ -27,7 +27,7 @@ public class Game extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        Korean korean = new Korean();
+        Korean korean = new Korean(this);
         allValues = new ArrayList<>(korean.getLetters().values());
         Collections.shuffle(allValues);
         for (int i = 0; i < maxLevel; i++) {

@@ -22,7 +22,7 @@ public class Korean extends Language {
         letters.put('ㅎ', new Letter('ㅎ', "ha", this.context.getString(R.string.consonant_text)));
         letters.put('ㅏ', new Letter('ㅏ', "a", this.context.getString(R.string.vowel_text)));
         letters.put('ㅑ', new Letter('ㅑ', "ya", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅓ', new Letter('ㅓ', "u", this.context.getString(R.string.vowel_text)));
+        letters.put('ㅓ', new Letter('ㅓ', "uh", this.context.getString(R.string.vowel_text)));
         letters.put('ㅕ', new Letter('ㅕ', "yu", this.context.getString(R.string.vowel_text)));
         letters.put('ㅗ', new Letter('ㅗ', "o", this.context.getString(R.string.vowel_text)));
         letters.put('ㅛ', new Letter('ㅛ', "yo", this.context.getString(R.string.vowel_text)));
