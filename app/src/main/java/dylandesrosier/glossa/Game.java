@@ -92,7 +92,7 @@ public class Game extends AppCompatActivity {
     }
 
     private void determineNextStage() {
-        if (currLevel > maxLevel) {
+        if (currLevel > maxLevel || values.size() <= 0) {
             Intent intent = new Intent(getApplicationContext(), GameOver.class);
             intent.putExtra("language_selection", languageSelection);
             startActivity(intent);
@@ -113,7 +113,7 @@ public class Game extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                generateStage();
+                determineNextStage();
             }
         }, 1000);
     }
