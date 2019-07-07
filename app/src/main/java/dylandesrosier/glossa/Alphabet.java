@@ -1,7 +1,9 @@
 package dylandesrosier.glossa;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,6 +27,8 @@ public class Alphabet extends AppCompatActivity {
         TextView titleText = findViewById(R.id.languageText);
         titleText.setText(languageSelection);
 
+
+
         switch (languageSelection){
             case "Korean":
                 language = new Korean(this);
@@ -35,7 +39,7 @@ public class Alphabet extends AppCompatActivity {
 
         // Add letters to linear layout
         LinearLayout alphabetLayout = findViewById(R.id.alphabetLayout);
-        for (Character letter : language.getLetters().keySet()) {
+        for (final Character letter : language.getLetters().keySet()) {
             View alphabetRowLayout = LayoutInflater.from(this).inflate(R.layout.alphabet_row, null, false);
 
             TextView letterTextView =  alphabetRowLayout.findViewById(R.id.letterTextView);
@@ -45,6 +49,15 @@ public class Alphabet extends AppCompatActivity {
             letterTextView.setText(Character.toString(letter));
             pronunciationTextView.setText(language.getLetters().get(letter).getPronunciation());
             categoryTextView.setText(language.getLetters().get(letter).getCategory());
+            alphabetRowLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), Pronunciation.class);
+                    intent.putExtra("letter", Character.toString(letter));
+                    intent.putExtra("pronunciation", language.getLetters().get(letter).getPronunciation());
+                    startActivity(intent);
+                }
+            });
             alphabetLayout.addView(alphabetRowLayout);
         }
 
