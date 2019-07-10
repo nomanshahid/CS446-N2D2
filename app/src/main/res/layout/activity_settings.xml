@@ -5,10 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background_light_3"
+    android:animateLayoutChanges="true"
     tools:context=".Settings">
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/startTimeText"
+        android:layout_width="160dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:inputType="time"
+        android:textColor="@color/White"
+        app:layout_constraintStart_toStartOf="@+id/timeTextView"
+        app:layout_constraintTop_toBottomOf="@+id/timeTextView" />
+
+    <EditText
+        android:id="@+id/endTimeText"
         android:layout_width="160dp"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
@@ -16,11 +28,11 @@
         android:ems="10"
         android:inputType="time"
         android:textColor="@color/White"
-        app:layout_constraintBottom_toBottomOf="@+id/editText"
+        app:layout_constraintBottom_toBottomOf="@+id/startTimeText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/editText"
-        app:layout_constraintTop_toTopOf="@+id/editText"
+        app:layout_constraintStart_toEndOf="@+id/startTimeText"
+        app:layout_constraintTop_toTopOf="@+id/startTimeText"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
@@ -32,8 +44,8 @@
         android:text="@string/location_notification_text"
         android:textColor="@color/White"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/editText"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
+        app:layout_constraintStart_toStartOf="@+id/startTimeText"
+        app:layout_constraintTop_toBottomOf="@+id/startTimeText" />
 
     <TextView
         android:id="@+id/settingsText"
@@ -54,17 +66,6 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="160dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="time"
-        android:textColor="@color/White"
-        app:layout_constraintStart_toStartOf="@+id/timeTextView"
-        app:layout_constraintTop_toBottomOf="@+id/timeTextView" />
 
     <Switch
         android:id="@+id/timeSwitch"
