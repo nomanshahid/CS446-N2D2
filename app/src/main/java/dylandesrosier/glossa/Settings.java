@@ -6,6 +6,7 @@ import android.icu.util.Calendar;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -13,19 +14,25 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.util.List;
+import java.util.concurrent.Executor;
+
+import dylandesrosier.glossa.database.AppDatabase;
+
 public class Settings extends AppCompatActivity {
+    AppDatabase appDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        appDb = AppDatabase.getInstance(this);
+
         Switch timeSwitch = findViewById(R.id.timeSwitch);
         Switch locationSwitch = findViewById(R.id.locationSwitch);
         TextView startTimeText = findViewById(R.id.startTimeText);
         TextView endTimeText = findViewById(R.id.endTimeText);
-
-        // TODO: Get and populate previous settings
 
         timeSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,6 +46,7 @@ public class Settings extends AppCompatActivity {
                     locationSwitch.setChecked(false);
                     startTimeText.setEnabled(true);
                     endTimeText.setEnabled(true);
+                    enableTimeNotif();
                 } else {
                     // TODO: Disable time and enable location
                     startTimeText.setEnabled(false);
@@ -125,5 +133,16 @@ public class Settings extends AppCompatActivity {
             }
         }, hour, minute, false);
         return timePicker;
+    }
+
+    private void enableTimeNotif(){
+        List<dylandesrosier.glossa.database.Settings> curSettings = appDb.settingsDao().getSettings();
+        if (curSettings.size() > 0){
+            // TODO: Update settings
+        } else {
+            // TODO: Create settings entry
+            dylandesrosier.glossa.database.Settings newSettings = new dylandesrosier.glossa.database.Settings(true, null, null, false);
+            appDb.settingsDao().insertSettings(newSettings);
+        }
     }
 }
