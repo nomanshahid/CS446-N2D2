@@ -14,10 +14,17 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
 import android.support.v4.app.ActivityCompat;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.view.ViewGroup;
 
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -38,6 +45,12 @@ public class Pronunciation extends AppCompatActivity {
     private ImageButton playButton = null;
     private MediaPlayer   player = null;
 
+    // Request
+    RequestQueue queue = Volley.newRequestQueue(this);
+    private static JsonObjectRequest jsonObjectRequest = null;
+    private String url = "speechace";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +65,7 @@ public class Pronunciation extends AppCompatActivity {
         character.setText(letter);
 
         fileName = getExternalCacheDir().getAbsolutePath();
-        fileName += "/recording.3gp";
+        fileName += "/recording.webm";
 
         recordButton = findViewById(R.id.recordButton);
         recordButton.setOnTouchListener(new View.OnTouchListener() {
@@ -80,7 +93,6 @@ public class Pronunciation extends AppCompatActivity {
             }
         });
 
-
     }
 
     @Override
@@ -100,6 +112,23 @@ public class Pronunciation extends AppCompatActivity {
             startRecording();
         } else {
             stopRecording();
+
+            // When we're done recording, build the request and add it to the queue.
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+//                        textView.setText("Response: " + response.toString());
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO: Handle error
+                        }
+                    });
+            queue.add(jsonObjectRequest);
         }
     }
 
@@ -130,7 +159,8 @@ public class Pronunciation extends AppCompatActivity {
     private void startRecording() {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.WEBM);
+
         recorder.setOutputFile(fileName);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
