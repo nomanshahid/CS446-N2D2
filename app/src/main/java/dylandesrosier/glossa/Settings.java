@@ -1,33 +1,104 @@
 package dylandesrosier.glossa;
 
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.icu.util.Calendar;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import org.osmdroid.api.IMapController;
+import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
+import org.osmdroid.views.overlay.MapEventsOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import dylandesrosier.glossa.database.AppDatabase;
 
 public class Settings extends AppCompatActivity {
     AppDatabase appDb;
+    MapView map = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Context ctx = getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_settings);
 
+        // TODO: Check permissions
+
         appDb = AppDatabase.getInstance(this);
+
+        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+        items.add(new OverlayItem("Naveed", "Location", new GeoPoint(43.480732, -80.529185))); // Lat/Lon decimal degrees
+
+        //the overlay
+        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,
+                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                    @Override
+                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                        //do something
+                        return true;
+                    }
+                    @Override
+                    public boolean onItemLongPress(final int index, final OverlayItem item) {
+                        return false;
+                    }
+                }, this);
+        mOverlay.setFocusItemsOnTap(true);
+
+        // map events
+        MapEventsReceiver mReceive = new MapEventsReceiver() {
+            @Override
+            public boolean singleTapConfirmedHelper(GeoPoint p) {
+
+                // write your code here
+                String longitude = Double
+                        .toString(((double) p.getLongitude()));
+                String latitude = Double
+                        .toString(((double) p.getLatitude()));
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Longitude: "
+                                + longitude + " Latitude: " + latitude, Toast.LENGTH_SHORT);
+                toast.show();
+
+                return false;
+            }
+
+            @Override
+            public boolean longPressHelper(GeoPoint p) {
+                // write your code here
+                return false;
+            }
+        };
+        MapEventsOverlay OverlayEvents = new MapEventsOverlay(this, mReceive);
+
+        map = findViewById(R.id.map);
+        map.setClipToOutline(true);
+        map.setMultiTouchControls(true);
+        IMapController mapController = map.getController();
+        mapController.setZoom(15.0);
+        GeoPoint startPoint = new GeoPoint(43.480732, -80.529185);
+        mapController.setCenter(startPoint);
+        map.getOverlays().add(OverlayEvents);
+        map.getOverlays().add(mOverlay);
 
         Switch timeSwitch = findViewById(R.id.timeSwitch);
         Switch locationSwitch = findViewById(R.id.locationSwitch);
@@ -144,5 +215,23 @@ public class Settings extends AppCompatActivity {
             dylandesrosier.glossa.database.Settings newSettings = new dylandesrosier.glossa.database.Settings(true, null, null, false);
             appDb.settingsDao().insertSettings(newSettings);
         }
+    }
+
+    public void onResume(){
+        super.onResume();
+        //this will refresh the osmdroid configuration on resuming.
+        //if you make changes to the configuration, use
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+        map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+    }
+
+    public void onPause(){
+        super.onPause();
+        //this will refresh the osmdroid configuration on resuming.
+        //if you make changes to the configuration, use
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //Configuration.getInstance().save(this, prefs);
+        map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 }
