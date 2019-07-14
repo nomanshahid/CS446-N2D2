@@ -1,16 +1,14 @@
 package dylandesrosier.glossa;
 
-import android.app.Notification;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,10 +17,9 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
-    private final String CHANNEL_ID = "quiz_notifications";
-
     private ArrayList<LanguageItem> languageList;
     private LanguageSpinnerAdapter languageSpinnerAdapter;
     private String languageSelection;
@@ -33,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         createNotificationChannel();
+        configureQuizNotification();
         initLanguageList();
         Spinner languageSpinner = findViewById(R.id.languageSpinner);
         languageSpinnerAdapter = new LanguageSpinnerAdapter(this, languageList);
@@ -88,27 +86,19 @@ public class MainActivity extends AppCompatActivity {
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        displayNotification();
     }
 
-    /* Helper to display quiz notification to user based on time and location */
-    public void displayNotification() {
-        String testOptions = "What sound does 'Oh' make?\n1. Ou\n2. Ah\n3. Ee\n4. Ay\nTap to answer in the Glossa app.";
+    /* Helper to show quiz notification at a specific time */
+    public void configureQuizNotification() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 3);
+        calendar.set(Calendar.MINUTE, 15);
 
-        int notificationId = 001;
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_translate_black_24dp)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.south_korea_flag))
-                .setContentTitle("Quiz Time!")
-                .setContentText("What sound does 'Oh' make? Tap to view options.")
-                .setVibrate(new long[]{Notification.DEFAULT_VIBRATE})
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(testOptions))
-                .build();
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(notificationId, notification);
+        Intent intent = new Intent(this, NotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     /* Standard code from https://developer.android.com/training/notify-user/build-notification.html */
@@ -118,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Quiz channel";
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            NotificationChannel channel = new NotificationChannel(getString(R.string.CHANNEL_ID), name, importance);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
