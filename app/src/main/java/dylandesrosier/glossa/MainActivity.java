@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 LanguageItem clickedItem = (LanguageItem)adapterView.getItemAtPosition(i);
 
-                //TODO: Update language selection in app
                 languageSelection = clickedItem.getLanguageName();
             }
 
