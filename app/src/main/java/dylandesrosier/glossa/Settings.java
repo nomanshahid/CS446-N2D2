@@ -3,13 +3,11 @@ package dylandesrosier.glossa;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,25 +21,29 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
-import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.Polygon;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import dylandesrosier.glossa.database.AppDatabase;
 
-import static org.osmdroid.views.overlay.gridlines.LatLonGridlineOverlay.backgroundColor;
-import static org.osmdroid.views.overlay.gridlines.LatLonGridlineOverlay.fontColor;
-import static org.osmdroid.views.overlay.gridlines.LatLonGridlineOverlay.fontSizeDp;
-
 public class Settings extends AppCompatActivity {
+    private static class TimeRange {
+        String startTime;
+        String endTime;
+
+        public TimeRange() {
+        }
+
+        public TimeRange(String startTime,
+                         String endTime) {
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
+    }
+
     AppDatabase appDb;
     MapView map;
 
@@ -53,12 +55,13 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         // TODO: Check permissions
+        // TODO: Remind Noman to do null checking
 
         appDb = AppDatabase.getInstance(this);
         map = findViewById(R.id.map);
 
-        SetupSettingsListeners();
-        SetupMap();
+        setupSettingsListeners();
+        setupMap();
 
         // Set the status bar to be transparent and lock app to portrait
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -69,13 +72,39 @@ public class Settings extends AppCompatActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
-    private void SetupSettingsListeners() {
+    private void setupSettingsListeners() {
         final Switch timeSwitch = findViewById(R.id.timeSwitch);
         final Switch locationSwitch = findViewById(R.id.locationSwitch);
         final TextView startTimeText = findViewById(R.id.startTimeText);
         final TextView endTimeText = findViewById(R.id.endTimeText);
 
-        // TODO: Load settings from db
+        String notifType = getNotifType();
+
+        switch (notifType) {
+            case "NONE":
+                timeSwitch.setChecked(false);
+                locationSwitch.setChecked(false);
+                startTimeText.setEnabled(false);
+                endTimeText.setEnabled(false);
+                break;
+            case "TIME":
+                timeSwitch.setChecked(true);
+                locationSwitch.setChecked(false);
+                startTimeText.setEnabled(true);
+                endTimeText.setEnabled(true);
+                break;
+            case "LOCATION":
+                timeSwitch.setChecked(false);
+                locationSwitch.setChecked(true);
+                startTimeText.setEnabled(false);
+                endTimeText.setEnabled(false);
+                break;
+            default:
+        }
+
+        TimeRange timeRange = getTime();
+        startTimeText.setText(timeRange.startTime);
+        endTimeText.setText(timeRange.endTime);
 
         timeSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,14 +112,14 @@ public class Settings extends AppCompatActivity {
                 boolean enabled = ((Switch) v).isChecked();
 
                 if (enabled) {
-                    // TODO: Disable location and enable time
                     locationSwitch.setChecked(false);
                     startTimeText.setEnabled(true);
                     endTimeText.setEnabled(true);
+                    saveNotifType("TIME");
                 } else {
-                    // TODO: Disable time
                     startTimeText.setEnabled(false);
                     endTimeText.setEnabled(false);
+                    saveNotifType(locationSwitch.isChecked() ? "LOCATION" : "NONE");
                 }
             }
         });
@@ -100,11 +129,12 @@ public class Settings extends AppCompatActivity {
             public void onClick(View v) {
                 boolean enabled = ((Switch) v).isChecked();
                 if (enabled) {
-                    // TODO: Disable time and enable location
-                    // TODO: If no location set when enabling, show toast
                     timeSwitch.setChecked(false);
+                    startTimeText.setEnabled(false);
+                    endTimeText.setEnabled(false);
+                    saveNotifType("LOCATION");
                 } else {
-                    // TODO: Disable location and enable time
+                    saveNotifType(timeSwitch.isChecked() ? "TIME" : "NONE");
                 }
             }
         });
@@ -128,7 +158,7 @@ public class Settings extends AppCompatActivity {
         });
     }
 
-    private void SetupMap() {
+    private void setupMap() {
         MapEventsReceiver mapEventsReceiver = new MapEventsReceiver() {
             @Override
             public boolean singleTapConfirmedHelper(GeoPoint p) {
@@ -166,7 +196,32 @@ public class Settings extends AppCompatActivity {
         timePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                tv.setText(((selectedHour > 12) ? selectedHour % 12 : selectedHour) + ":" + (selectedMinute < 10 ? ("0" + selectedMinute) : selectedMinute) + " " + ((selectedHour >= 12) ? "PM" : "AM"));
+                int hour = selectedHour;
+                String sHour;
+                if (hour < 10) {
+                    sHour = "0" + hour;
+                } else {
+                    sHour = String.valueOf(hour);
+                }
+
+                int minute = selectedMinute;
+                String sMinute;
+                if (minute < 10) {
+                    sMinute = "0" + minute;
+                } else {
+                    sMinute = String.valueOf(minute);
+                }
+
+                String viewText = sHour + ":" + sMinute;
+                tv.setText(viewText);
+
+                if (tv.getId() == R.id.startTimeText) {
+                    TextView endTimeText = findViewById(R.id.endTimeText);
+                    saveTime(viewText, endTimeText.getText().toString());
+                } else {
+                    TextView startTimeText = findViewById(R.id.startTimeText);
+                    saveTime(startTimeText.getText().toString(), viewText);
+                }
             }
         }, hour, minute, false);
         return timePicker;
@@ -179,20 +234,20 @@ public class Settings extends AppCompatActivity {
             newSettings = settingsList.get(0);
             newSettings.longitude = p.getLongitude();
             newSettings.latitude = p.getLatitude();
+            appDb.settingsDao().updateSettings(newSettings);
 
         } else {
             newSettings = new dylandesrosier.glossa.database.Settings("NONE", null, null, p.getLongitude(), p.getLatitude());
+            appDb.settingsDao().insertSettings(newSettings);
         }
-
-        appDb.settingsDao().insertSettings(newSettings);
     }
 
-    private GeoPoint getLocation(){
+    private GeoPoint getLocation() {
         List<dylandesrosier.glossa.database.Settings> settingsList = appDb.settingsDao().getSettings();
         GeoPoint p;
         if (settingsList.size() > 0) {
             dylandesrosier.glossa.database.Settings curSettings = settingsList.get(0);
-            if (curSettings.latitude != null && curSettings.longitude != null){
+            if (curSettings.latitude != null && curSettings.longitude != null) {
                 p = new GeoPoint(curSettings.latitude, curSettings.longitude);
                 setMarker(p);
                 return p;
@@ -204,7 +259,7 @@ public class Settings extends AppCompatActivity {
         return p;
     }
 
-    private void setMarker(GeoPoint p){
+    private void setMarker(GeoPoint p) {
         // Check if marker exists and update
         List<Overlay> overlays = map.getOverlays();
         Boolean isMarkerCreated = false;
@@ -228,7 +283,30 @@ public class Settings extends AppCompatActivity {
         }
     }
 
+    private void saveNotifType(String notifType) {
+        List<dylandesrosier.glossa.database.Settings> settingsList = appDb.settingsDao().getSettings();
+        dylandesrosier.glossa.database.Settings newSettings;
+        if (settingsList.size() > 0) {
+            newSettings = settingsList.get(0);
+            newSettings.notif_type = notifType;
+            appDb.settingsDao().updateSettings(newSettings);
 
+        } else {
+            newSettings = new dylandesrosier.glossa.database.Settings(notifType, null, null, null, null);
+            appDb.settingsDao().insertSettings(newSettings);
+        }
+    }
+
+    private String getNotifType() {
+        List<dylandesrosier.glossa.database.Settings> settingsList = appDb.settingsDao().getSettings();
+
+        if (settingsList.size() > 0) {
+            dylandesrosier.glossa.database.Settings curSettings = settingsList.get(0);
+            return curSettings.notif_type;
+        } else {
+            return "NONE";
+        }
+    }
 
     // Start and end time is in the format HH:MM (HH is 24 hour format)
     private void saveTime(String startTime, String endTime) {
@@ -238,12 +316,23 @@ public class Settings extends AppCompatActivity {
             newSettings = settingsList.get(0);
             newSettings.start_time = startTime;
             newSettings.end_time = endTime;
-
+            appDb.settingsDao().updateSettings(newSettings);
         } else {
             newSettings = new dylandesrosier.glossa.database.Settings("NONE", startTime, endTime, null, null);
+            appDb.settingsDao().insertSettings(newSettings);
+        }
+    }
+
+    private TimeRange getTime() {
+        List<dylandesrosier.glossa.database.Settings> settingsList = appDb.settingsDao().getSettings();
+        TimeRange timeRange = new TimeRange();
+        if (settingsList.size() > 0) {
+            dylandesrosier.glossa.database.Settings curSettings = settingsList.get(0);
+            timeRange.startTime = curSettings.start_time;
+            timeRange.endTime = curSettings.end_time;
         }
 
-        appDb.settingsDao().insertSettings(newSettings);
+        return timeRange;
     }
 
     public void onResume() {
