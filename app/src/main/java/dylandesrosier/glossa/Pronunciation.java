@@ -15,18 +15,16 @@ import android.util.Log;
 import android.view.View;
 import android.support.v4.app.ActivityCompat;
 
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.loopj.android.http.*;
 
 import org.json.JSONObject;
+import org.json.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import cz.msebera.android.httpclient.Header;
 
 public class Pronunciation extends AppCompatActivity {
     private Integer score;
@@ -46,9 +44,7 @@ public class Pronunciation extends AppCompatActivity {
     private MediaPlayer   player = null;
 
     // Request
-    RequestQueue queue = Volley.newRequestQueue(this);
-    private static JsonObjectRequest jsonObjectRequest = null;
-    private String url = "speechace";
+    private String url = "https://phoneme-recognition.herokuapp.com/getScore";
 
 
     @Override
@@ -63,9 +59,11 @@ public class Pronunciation extends AppCompatActivity {
 
         TextView character = findViewById(R.id.character_text);
         character.setText(letter);
+        TextView pronun = findViewById(R.id.pronunciation);
+        pronun.setText(pronunciation);
 
         fileName = getExternalCacheDir().getAbsolutePath();
-        fileName += "/recording.webm";
+        fileName += "/recording.mpeg4";
 
         recordButton = findViewById(R.id.recordButton);
         recordButton.setOnTouchListener(new View.OnTouchListener() {
@@ -112,23 +110,6 @@ public class Pronunciation extends AppCompatActivity {
             startRecording();
         } else {
             stopRecording();
-
-            // When we're done recording, build the request and add it to the queue.
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-//                        textView.setText("Response: " + response.toString());
-                        }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            // TODO: Handle error
-                        }
-                    });
-            queue.add(jsonObjectRequest);
         }
     }
 
@@ -159,10 +140,10 @@ public class Pronunciation extends AppCompatActivity {
     private void startRecording() {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.WEBM);
 
         recorder.setOutputFile(fileName);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
         try {
             recorder.prepare();
@@ -170,14 +151,63 @@ public class Pronunciation extends AppCompatActivity {
             Log.e(LOG_TAG, "prepare() failed");
         }
 
+        TextView r = findViewById(R.id.recordingIcon);
+        r.setVisibility(View.VISIBLE);
+
         recorder.start();
     }
 
     private void stopRecording() {
+        TextView r = findViewById(R.id.recordingIcon);
+        r.setVisibility(View.INVISIBLE);
+
         recorder.stop();
         recorder.release();
         recorder = null;
+
+        getScore();
     }
+
+    private void getScore() {
+        // Build request
+        File myFile = new File(fileName);
+        RequestParams params = new RequestParams();
+        try {
+            params.put("audio", myFile);
+            params.put("pronunciation", pronunciation);
+            params.put("letter", letter);
+        } catch(FileNotFoundException e) {}
+
+        // send request
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.post(url, params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+                Log.d(LOG_TAG, "sent");
+                try {
+                    JSONObject r = new JSONObject(new String(response));
+                    Log.d(LOG_TAG, r.getString("score"));
+                    TextView score = findViewById(R.id.score);
+                    score.setText(String.format("%s/100", r.getString("score")));
+                    score.setVisibility(View.VISIBLE);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] bytes, Throwable throwable) {
+                TextView score = findViewById(R.id.score);
+                score.setText("There was an issue scoring your audio");
+                score.setVisibility(View.VISIBLE);
+                Log.d(LOG_TAG, "failed");
+            }
+        });
+    }
+
+
 
     @Override
     public void onStop() {
