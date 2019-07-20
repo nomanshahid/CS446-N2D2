@@ -50,12 +50,12 @@ public class Settings extends AppCompatActivity {
         }
     }
 
-    AppDatabase appDb;
-    MapView map;
-    boolean locationAccepted;
-    boolean internetAccepted;
-    boolean internetStateAccepted;
-    boolean writeStorageAccepted;
+    private AppDatabase appDb;
+    private MapView map;
+    private boolean locationAccepted;
+    private boolean internetAccepted;
+    private boolean internetStateAccepted;
+    private boolean writeStorageAccepted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

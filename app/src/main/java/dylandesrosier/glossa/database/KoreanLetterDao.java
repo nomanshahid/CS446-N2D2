@@ -14,7 +14,7 @@ public interface KoreanLetterDao {
     @Query("SELECT * FROM koreanletter")
     List<KoreanLetter> getLetters();
 
-    @Query("SELECT * FROM koreanletter WHERE letter = :letter LIMIT 1")
+    @Query("SELECT * FROM koreanletter WHERE letter = :letter")
     KoreanLetter getLetter(Character letter);
 
     @Query("DELETE FROM koreanletter")
