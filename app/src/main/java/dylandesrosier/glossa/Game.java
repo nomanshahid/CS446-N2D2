@@ -18,7 +18,7 @@ public class Game extends AppCompatActivity {
     private Button mainButton = null;
     private String languageSelection;
 
-    private Language langModel;
+    private Language language;
 
     ArrayList<Letter> allGameLetters = new ArrayList<>();
     ArrayList<Letter> gameLetters = new ArrayList<>();
@@ -30,7 +30,7 @@ public class Game extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         // Set the language label to the selected language
-        langModel = (Language) getIntent().getSerializableExtra("lang_model");
+        language = (Language) getIntent().getSerializableExtra("language");
         languageSelection = getIntent().getStringExtra("language_selection");
 
         ((TextView)findViewById(R.id.game_language_label)).setText(languageSelection);
@@ -47,8 +47,8 @@ public class Game extends AppCompatActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // initialize game variables
-        gameLetters = langModel.getGameLetters(maxLetters);
-        allGameLetters = langModel.getAllGameLetters();
+        gameLetters = language.getGameLetters(maxLetters);
+        allGameLetters = language.getAllGameLetters();
 
         // Initialize game stage
         generateStage();
@@ -109,6 +109,7 @@ public class Game extends AppCompatActivity {
         if (currLevel > maxLetters || gameLetters.size() <= 0) {
             Intent intent = new Intent(getApplicationContext(), GameOver.class);
             intent.putExtra("language_selection", languageSelection);
+            intent.putExtra("language", language);
             intent.putExtra("wrong_count", wrongCount);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);

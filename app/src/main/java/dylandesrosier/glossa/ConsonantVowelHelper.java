@@ -1,29 +1,24 @@
 package dylandesrosier.glossa;
 
-import android.content.Context;
+import java.io.Serializable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
-public class ConsonantVowelHelper implements LetterCombinationStrategy {
+public class ConsonantVowelHelper implements LetterCombinationStrategy, Serializable {
 
     private int baseUnicode;
-    private Context context;
 
-    public ConsonantVowelHelper(Context context, int baseUnicode) {
-        this.context = context;
+    public ConsonantVowelHelper(int baseUnicode) {
         this.baseUnicode = baseUnicode;
     }
 
     public Letter getChar(Letter consonant, Letter vowel) {
         // Character
-        char c = (char) (((int)consonant.getCharacter() * 21 + (int)vowel.getCharacter()) + baseUnicode);
+        char c = (char) ((consonant.getIndex() * 21 + vowel.getIndex()) * 28 + baseUnicode);
 
         // Pronunciation
-        String consPronunciation = consonant.getCharacter() == 'ㅇ' ? "" : consonant.getPronunciation().substring(0, 1);
+        String consPronunciation = consonant.getCharacter() == 'ㅇ' ? "" : consonant.getPronunciation().substring(0, consonant.getPronunciation().length() - 1);
         String p = consPronunciation + vowel.getPronunciation();
-        String type = context.getString(R.string.combined_text);
+        String type = "combined";
 
-        return new Letter(c, p, type);
+        return new Letter(c, p, 0, type);
     }
 }

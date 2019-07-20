@@ -23,19 +23,10 @@ public class Alphabet extends AppCompatActivity {
         setContentView(R.layout.activity_alphabet);
 
         languageSelection = getIntent().getStringExtra("language_selection");
+        language = (Language) getIntent().getSerializableExtra("language");
 
         TextView titleText = findViewById(R.id.languageText);
         titleText.setText(languageSelection);
-
-
-
-        switch (languageSelection){
-            case "Korean":
-                language = new Korean(this);
-                break;
-            default:
-                language = new Language(this);
-        }
 
         // Add letters to linear layout
         LinearLayout alphabetLayout = findViewById(R.id.alphabetLayout);

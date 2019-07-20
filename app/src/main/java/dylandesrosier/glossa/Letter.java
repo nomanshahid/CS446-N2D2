@@ -1,14 +1,18 @@
 package dylandesrosier.glossa;
 
-public class Letter {
+import java.io.Serializable;
+
+public class Letter implements Serializable {
     private Character character;
     private String pronunciation;
     private String category;
+    private int index;
 
-    public Letter(Character character, String pronunciation, String category){
+    public Letter(Character character, String pronunciation, int index, String category){
         this.character = character;
         this.pronunciation = pronunciation;
         this.category = category;
+        this.index = index;
     }
 
     public Character getCharacter() {
@@ -21,5 +25,9 @@ public class Letter {
 
     public String getCategory() {
         return category;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

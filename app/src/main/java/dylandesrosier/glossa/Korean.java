@@ -1,60 +1,59 @@
 package dylandesrosier.glossa;
 
-import android.content.Context;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Korean extends Language {
 
-    private int internalLevel = 0;
+    private int internalLevel = -1;
 
-    public Korean(Context context){
-        super(context);
-        letters.put('ㄱ', new Letter('ㄱ', "ga", this.context.getString(R.string.consonant_text)));
-        letters.put('ㄴ', new Letter('ㄴ', "na", this.context.getString(R.string.consonant_text)));
-        letters.put('ㄷ', new Letter('ㄷ', "da", this.context.getString(R.string.consonant_text)));
-        letters.put('ㄹ', new Letter('ㄹ', "la", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅁ', new Letter('ㅁ', "ma", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅂ', new Letter('ㅂ', "ba", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅅ', new Letter('ㅅ', "sa", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅇ', new Letter('ㅇ', "ah", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅈ', new Letter('ㅈ', "ja", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅊ', new Letter('ㅊ', "cha", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅋ', new Letter('ㅋ', "ka", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅌ', new Letter('ㅌ', "ta", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅍ', new Letter('ㅍ', "pa", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅎ', new Letter('ㅎ', "ha", this.context.getString(R.string.consonant_text)));
-        letters.put('ㄲ', new Letter('ㄲ', "ha", this.context.getString(R.string.consonant_text)));
-        letters.put('ㄸ', new Letter('ㄸ', "ha", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅆ', new Letter('ㅃ', "ha", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅃ', new Letter('ㅆ', "ha", this.context.getString(R.string.consonant_text)));
-        letters.put('ㅉ', new Letter('ㅉ', "ha", this.context.getString(R.string.consonant_text)));
+    public Korean(){
+        letters.put('ㄱ', new Letter('ㄱ', "ga", 0,"Consonant"));
+        letters.put('ㄲ', new Letter('ㄲ', "gga", 1,"Consonant"));
+        letters.put('ㄴ', new Letter('ㄴ', "na",2, "Consonant"));
+        letters.put('ㄷ', new Letter('ㄷ', "da",3, "Consonant"));
+        letters.put('ㄸ', new Letter('ㄸ', "dda",4, "Consonant"));
+        letters.put('ㄹ', new Letter('ㄹ', "la", 5,"Consonant"));
+        letters.put('ㅁ', new Letter('ㅁ', "ma",6, "Consonant"));
+        letters.put('ㅂ', new Letter('ㅂ', "ba",7, "Consonant"));
+        letters.put('ㅃ', new Letter('ㅃ', "bba",8, "Consonant"));
+        letters.put('ㅅ', new Letter('ㅅ', "sa", 9,"Consonant"));
+        letters.put('ㅆ', new Letter('ㅆ', "ssa",10, "Consonant"));
+        letters.put('ㅇ', new Letter('ㅇ', "ah",11, "Consonant"));
+        letters.put('ㅈ', new Letter('ㅈ', "ja",12, "Consonant"));
+        letters.put('ㅉ', new Letter('ㅉ', "jja",13, "Consonant"));
+        letters.put('ㅊ', new Letter('ㅊ', "cha",14, "Consonant"));
+        letters.put('ㅋ', new Letter('ㅋ', "ka", 15,"Consonant"));
+        letters.put('ㅌ', new Letter('ㅌ', "ta",16, "Consonant"));
+        letters.put('ㅍ', new Letter('ㅍ', "pa",17, "Consonant"));
+        letters.put('ㅎ', new Letter('ㅎ', "ha", 18, "Consonant"));
 
-        letters.put('ㅏ', new Letter('ㅏ', "ah", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅑ', new Letter('ㅑ', "ya", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅓ', new Letter('ㅓ', "uh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅕ', new Letter('ㅕ', "yuh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅗ', new Letter('ㅗ', "oh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅛ', new Letter('ㅛ', "yo", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅜ', new Letter('ㅜ', "oo", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅠ', new Letter('ㅠ', "yoo", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅡ', new Letter('ㅡ', "eu", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅣ', new Letter('ㅣ', "ee", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅐ', new Letter('ㅐ', "eh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅒ', new Letter('ㅒ', "yeh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅔ', new Letter('ㅔ', "eh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅖ', new Letter('ㅖ', "yeh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅘ', new Letter('ㅘ', "wah", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅙ', new Letter('ㅙ', "weh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅚ', new Letter('ㅚ', "weh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅝ', new Letter('ㅝ', "wuh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅞ', new Letter('ㅞ', "weh", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅟ', new Letter('ㅟ', "we", this.context.getString(R.string.vowel_text)));
-        letters.put('ㅢ', new Letter('ㅢ', "eh", this.context.getString(R.string.vowel_text)));
+        letters.put('ㅏ', new Letter('ㅏ', "ah", 0,"Vowel"));
+        letters.put('ㅐ', new Letter('ㅐ', "eh", 1,"Vowel"));
+        letters.put('ㅑ', new Letter('ㅑ', "ya", 2,"Vowel"));
+        letters.put('ㅒ', new Letter('ㅒ', "yeh",3, "Vowel"));
+        letters.put('ㅓ', new Letter('ㅓ', "uh",4, "Vowel"));
+        letters.put('ㅔ', new Letter('ㅔ', "eh", 5,"Vowel"));
+        letters.put('ㅕ', new Letter('ㅕ', "yuh",6, "Vowel"));
+        letters.put('ㅖ', new Letter('ㅖ', "yeh",7, "Vowel"));
+        letters.put('ㅗ', new Letter('ㅗ', "oh",8, "Vowel"));
+        letters.put('ㅘ', new Letter('ㅘ', "wah",9, "Vowel"));
+        letters.put('ㅙ', new Letter('ㅙ', "weh", 10,"Vowel"));
+        letters.put('ㅚ', new Letter('ㅚ', "weh",11, "Vowel"));
+        letters.put('ㅛ', new Letter('ㅛ', "yo",12, "Vowel"));
+        letters.put('ㅜ', new Letter('ㅜ', "oo",13, "Vowel"));
+        letters.put('ㅝ', new Letter('ㅝ', "wuh",14, "Vowel"));
+        letters.put('ㅞ', new Letter('ㅞ', "weh",15, "Vowel"));
+        letters.put('ㅟ', new Letter('ㅟ', "we",16, "Vowel"));
+        letters.put('ㅠ', new Letter('ㅠ', "yoo",17, "Vowel"));
+        letters.put('ㅡ', new Letter('ㅡ', "eu",18, "Vowel"));
+        letters.put('ㅢ', new Letter('ㅢ', "eh",19, "Vowel"));
+        letters.put('ㅣ', new Letter('ㅣ', "ee",20, "Vowel"));
 
-        combinationStrategy = new ConsonantVowelHelper(context, 44032);
-        consonants = filterMap(this.context.getString(R.string.consonant_text));
-        vowels = filterMap(this.context.getString(R.string.vowel_text));
+        combinationStrategy = new ConsonantVowelHelper(44032);
+        consonants = filterMap("Consonant");
+        vowels = filterMap("Vowel");
+        gameLetters = new ArrayList<>();
     }
 
     private ArrayList<Letter> filterMap(String category) {
@@ -80,27 +79,32 @@ public class Korean extends Language {
         ArrayList<Letter> retLetters = new ArrayList<>();
         for (int i = startIdx; i >= endIdx; i--) {
             retLetters.add(gameLetters.get(i));
-            retLetters.remove(i);
+            gameLetters.remove(i);
         }
         return retLetters;
     }
 
     @Override
     public ArrayList<Letter> getAllGameLetters() {
-        return (ArrayList<Letter>) gameLetters.clone();
+        return (ArrayList<Letter>) allGameLetters.clone();
     }
 
     private void generateGameLetters() {
         if (internalLevel == 0) {
             gameLetters = new ArrayList<>(letters.values());
-            gameLetters = (ArrayList<Letter>) gameLetters.subList(0, 5);
+            // TODO: DELTE THIS LINE AS ITS FOR TESTING
+
+            gameLetters = new ArrayList<>(gameLetters.subList(0, 10));
         } else {
             for (Letter c: consonants) {
                 for (Letter v: vowels) {
-                    gameLetters.add(combinationStrategy.getChar(c, v));
+                    Letter x = combinationStrategy.getChar(c, v);
+                    gameLetters.add(x);
                 }
             }
         }
         Collections.shuffle(gameLetters);
+        allGameLetters = (ArrayList<Letter>) gameLetters.clone();
+
     }
 }

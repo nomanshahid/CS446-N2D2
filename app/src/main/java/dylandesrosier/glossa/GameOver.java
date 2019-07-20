@@ -56,6 +56,7 @@ public class GameOver extends AppCompatActivity {
     public void onReplayClick() {
         Intent intent = new Intent(getApplicationContext(), Game.class);
         intent.putExtra("language_selection", getIntent().getStringExtra("language_selection"));
+        intent.putExtra("language", getIntent().getSerializableExtra("language"));
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }

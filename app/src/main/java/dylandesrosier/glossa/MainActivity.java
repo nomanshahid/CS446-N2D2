@@ -85,13 +85,14 @@ public class MainActivity extends AppCompatActivity {
     public void openAlphabet() {
         Intent intent = new Intent(getApplicationContext(), Alphabet.class);
         intent.putExtra("language_selection", languageSelection);
+        intent.putExtra("language", langModel);
         startActivity(intent);
     }
 
     public void openGame() {
         Intent intent = new Intent(getApplicationContext(), Game.class);
         intent.putExtra("language_selection", languageSelection);
-        intent.putExtra("lang_model", langModel);
+        intent.putExtra("language", langModel);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateLanguage(String lang) {
         languageSelection = lang;
         if (lang == this.getResources().getString(R.string.korean_text)) {
-            langModel = new Korean(this);
+            langModel = new Korean();
         }
     }
 
