@@ -36,12 +36,12 @@ public class Pronunciation extends AppCompatActivity {
     private static String fileName = null;
     private static final String LOG_TAG = "AudioRecordTest";
     private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
 
     private ImageButton recordButton = null;
     private MediaRecorder recorder = null;
     private ImageButton playButton = null;
-    private MediaPlayer   player = null;
+    private MediaPlayer player = null;
 
     // Request
     private String url = "https://phoneme-recognition.herokuapp.com/getScore";
@@ -96,13 +96,12 @@ public class Pronunciation extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
-        if (!permissionToRecordAccepted ) finish();
-
+        if (!permissionToRecordAccepted) finish();
     }
 
     private void onRecord(boolean start) {
@@ -176,7 +175,8 @@ public class Pronunciation extends AppCompatActivity {
             params.put("audio", myFile);
             params.put("pronunciation", pronunciation);
             params.put("letter", letter);
-        } catch(FileNotFoundException e) {}
+        } catch (FileNotFoundException e) {
+        }
 
         // send request
         AsyncHttpClient client = new AsyncHttpClient();
@@ -206,7 +206,6 @@ public class Pronunciation extends AppCompatActivity {
             }
         });
     }
-
 
 
     @Override

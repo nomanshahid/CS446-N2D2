@@ -3,9 +3,12 @@ package dylandesrosier.glossa;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -46,6 +49,10 @@ public class Settings extends AppCompatActivity {
 
     AppDatabase appDb;
     MapView map;
+    boolean locationAccepted;
+    boolean internetAccepted;
+    boolean internetStateAccepted;
+    boolean writeStorageAccepted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +61,14 @@ public class Settings extends AppCompatActivity {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_settings);
 
-        // TODO: Check permissions
-        // TODO: Remind Noman to do null checking
+        // Check permissions
+        String[] permissions = {"android.permission.ACCESS_FINE_LOCATION", "android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE", "android.permission.WRITE_EXTERNAL_STORAGE"};
+        ActivityCompat.requestPermissions(this, permissions, 200);
 
         appDb = AppDatabase.getInstance(this);
         map = findViewById(R.id.map);
 
+        // Activity setup
         setupSettingsListeners();
         setupMap();
 
@@ -70,6 +79,21 @@ public class Settings extends AppCompatActivity {
         }
 
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 200:
+                locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                internetAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                internetStateAccepted = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+                writeStorageAccepted = grantResults[3] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!locationAccepted || !internetAccepted || !internetStateAccepted || !writeStorageAccepted)
+            finish();
     }
 
     private void setupSettingsListeners() {
