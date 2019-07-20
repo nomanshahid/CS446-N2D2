@@ -1,10 +1,13 @@
 package dylandesrosier.glossa;
 
+import android.Manifest;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.icu.util.Calendar;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -209,7 +212,20 @@ public class Settings extends AppCompatActivity {
 
         IMapController mapController = map.getController();
         mapController.setZoom(17.0);
-        mapController.setCenter(getLocation());
+
+        // Center the map on the saved location, otherwise center it on the current location
+        GeoPoint center = getLocation();
+        if (center == null){
+            LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            if ( ActivityCompat.checkSelfPermission( this, Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED ) {
+                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                center = new GeoPoint(location.getLatitude(), location.getLongitude());
+            }
+        } else {
+            // Set center to UW
+            center = new GeoPoint(43.472286, -80.544861);
+        }
+        mapController.setCenter(center);
     }
 
     private TimePickerDialog createTimePicker(final TextView tv) {
@@ -268,19 +284,17 @@ public class Settings extends AppCompatActivity {
 
     private GeoPoint getLocation() {
         List<dylandesrosier.glossa.database.Settings> settingsList = appDb.settingsDao().getSettings();
-        GeoPoint p;
+
         if (settingsList.size() > 0) {
             dylandesrosier.glossa.database.Settings curSettings = settingsList.get(0);
             if (curSettings.latitude != null && curSettings.longitude != null) {
-                p = new GeoPoint(curSettings.latitude, curSettings.longitude);
+                GeoPoint p = new GeoPoint(curSettings.latitude, curSettings.longitude);
                 setMarker(p);
                 return p;
             }
         }
 
-        // TODO: return user's current location
-        p = new GeoPoint(43.480732, -80.529182);
-        return p;
+        return null;
     }
 
     private void setMarker(GeoPoint p) {
