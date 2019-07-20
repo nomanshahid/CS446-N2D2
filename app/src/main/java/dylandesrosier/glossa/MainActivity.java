@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<LanguageItem> languageList;
     private LanguageSpinnerAdapter languageSpinnerAdapter;
     private String languageSelection;
+    private Language langModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +34,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 LanguageItem clickedItem = (LanguageItem)adapterView.getItemAtPosition(i);
-
-                languageSelection = clickedItem.getLanguageName();
+                updateLanguage(clickedItem.getLanguageName());
             }
 
             @Override
@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     public void openGame() {
         Intent intent = new Intent(getApplicationContext(), Game.class);
         intent.putExtra("language_selection", languageSelection);
+        intent.putExtra("lang_model", langModel);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
@@ -103,6 +104,13 @@ public class MainActivity extends AppCompatActivity {
     public void openSettings() {
         Intent intent = new Intent(getApplicationContext(), Settings.class);
         startActivity(intent);
+    }
+
+    private void updateLanguage(String lang) {
+        languageSelection = lang;
+        if (lang == this.getResources().getString(R.string.korean_text)) {
+            langModel = new Korean(this);
+        }
     }
 
     private void initLanguageList(){

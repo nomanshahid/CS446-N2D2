@@ -10,6 +10,7 @@
     <string name="alphabet_pronunciation">Pronunciation:</string>
     <string name="consonant_text">Consonant</string>
     <string name="vowel_text">Vowel</string>
+    <string name="combined_text">Combined</string>
     <string name="settings_text">Settings</string>
     <string name="notification_text">Notifications</string>
     <string name="time_notification_text">Time Based</string>

@@ -11,15 +11,17 @@ import android.view.WindowManager;
 import java.util.*;
 
 public class Game extends AppCompatActivity {
-    private final int maxLevel = 2;
+    private final int maxLetters = 5;
     private int currLevel = 1;
     private int wrongCount = 0;
     private Letter mainLetter = null;
     private Button mainButton = null;
     private String languageSelection;
 
-    ArrayList<Letter> values = new ArrayList<>();
-    ArrayList<Letter> allValues = new ArrayList<>();
+    private Language langModel;
+
+    ArrayList<Letter> allGameLetters = new ArrayList<>();
+    ArrayList<Letter> gameLetters = new ArrayList<>();
 
     private TextView levelTextView;
     @Override
@@ -27,21 +29,12 @@ public class Game extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        Korean korean = new Korean(this);
-        allValues = new ArrayList<>(korean.getLetters().values());
-        Collections.shuffle(allValues);
-        for (int i = 0; i < maxLevel; i++) {
-            values.add(allValues.get(i));
-        }
-
         // Set the language label to the selected language
+        langModel = (Language) getIntent().getSerializableExtra("lang_model");
         languageSelection = getIntent().getStringExtra("language_selection");
-        TextView languageLabel = findViewById(R.id.game_language_label);
-        languageLabel.setText(languageSelection);
 
-        // Set the max level label
-        TextView maxLabel = findViewById(R.id.max_level);
-        maxLabel.setText("/" + maxLevel);
+        ((TextView)findViewById(R.id.game_language_label)).setText(languageSelection);
+        ((TextView)findViewById(R.id.max_level)).setText("/" + maxLetters);
 
         // initialize level text view
         levelTextView = findViewById(R.id.curr_level);
@@ -52,6 +45,10 @@ public class Game extends AppCompatActivity {
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // initialize game variables
+        gameLetters = langModel.getGameLetters(maxLetters);
+        allGameLetters = langModel.getAllGameLetters();
 
         // Initialize game stage
         generateStage();
@@ -73,18 +70,18 @@ public class Game extends AppCompatActivity {
         ArrayList<Letter> letters = new ArrayList<>();
 
         // pick the correct value and settext in main character window
-        Collections.shuffle(values);
-        mainLetter = values.get(0);
+        Collections.shuffle(gameLetters);
+
+        mainLetter = gameLetters.get(0);
         letters.add(mainLetter);
         characterView.setText(Character.toString(mainLetter.getCharacter()));
 
-
         // pick 2 other random values
-        allValues.remove(mainLetter);
-        Collections.shuffle(allValues);
-        letters.add(allValues.get(0));
-        letters.add(allValues.get(1));
-        allValues.add(mainLetter);
+        allGameLetters.remove(mainLetter);
+        Collections.shuffle(allGameLetters);
+        letters.add(allGameLetters.get(0));
+        letters.add(allGameLetters.get(1));
+        allGameLetters.add(mainLetter);
 
         // cycle through letters and assign to random button
         for (int i = 0; i < 3; i++) {
@@ -109,7 +106,7 @@ public class Game extends AppCompatActivity {
 
     private void determineNextStage() {
         // start new activity if user completed all max characters otherwise new stage
-        if (currLevel > maxLevel || values.size() <= 0) {
+        if (currLevel > maxLetters || gameLetters.size() <= 0) {
             Intent intent = new Intent(getApplicationContext(), GameOver.class);
             intent.putExtra("language_selection", languageSelection);
             intent.putExtra("wrong_count", wrongCount);
@@ -123,7 +120,7 @@ public class Game extends AppCompatActivity {
     public void onButtonClick(Button b) {
         if (b.getText().toString() == mainLetter.getPronunciation()) {
             currLevel++;
-            values.remove(mainLetter);
+            gameLetters.remove(mainLetter);
         } else {
             wrongCount++;
             b.setBackgroundResource(R.drawable.game_option_button_incorrect);
