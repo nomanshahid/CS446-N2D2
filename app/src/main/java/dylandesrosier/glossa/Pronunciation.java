@@ -1,19 +1,19 @@
 package dylandesrosier.glossa;
 
 import android.Manifest;
-import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 
 import com.loopj.android.http.*;
 

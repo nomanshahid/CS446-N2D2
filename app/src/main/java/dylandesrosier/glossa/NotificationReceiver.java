@@ -7,8 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationCompat;
 
 /* Helper class to display quiz notification at specific time */
 
@@ -29,7 +28,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.south_korea_flag))
                 .setContentIntent(pendingIntent)
                 .setContentTitle("Quiz Time!")
-                .setContentText("What sound does 'Oh' make? Tap to view options.")
+                .setContentText("What sound does 'Oh' make? Expand to view options.")
                 .setVibrate(new long[]{Notification.DEFAULT_VIBRATE})
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(testOptions))

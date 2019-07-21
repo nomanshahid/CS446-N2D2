@@ -33,6 +33,7 @@
         </activity>
 
         <receiver android:name=".NotificationReceiver" />
+        <receiver android:name=".GeofenceBroadcastReceiver"/>
     </application>
 
 </manifest>
