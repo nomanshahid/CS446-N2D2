@@ -6,26 +6,30 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "Settings")
 public class Settings {
-        // TODO: Add columns
-        @PrimaryKey(autoGenerate = true)
-        public int uid;
+    @PrimaryKey(autoGenerate = true)
+    public int uid;
 
-        @ColumnInfo(name = "enable_time_notif")
-        public boolean enable_time_notif;
+    // Can be NONE, TIME, or LOCATION
+    @ColumnInfo(name = "notif_type")
+    public String notif_type;
 
-        @ColumnInfo(name = "notif_start_time")
-        public String start_time;
+    @ColumnInfo(name = "notif_start_time")
+    public String start_time;
 
-        @ColumnInfo(name = "notif_end_time")
-        public String end_time;
+    @ColumnInfo(name = "notif_end_time")
+    public String end_time;
 
-        @ColumnInfo(name = "enable_location_notif")
-        public boolean enable_location_notif;
+    @ColumnInfo(name = "longitude")
+    public Double longitude;
 
-        public Settings(boolean enable_time_notif, String start_time, String end_time, boolean enable_location_notif){
-            this.enable_time_notif = enable_time_notif;
-            this.start_time = start_time;
-            this.end_time = end_time;
-            this.enable_location_notif = enable_location_notif;
-        }
+    @ColumnInfo(name = "latitude")
+    public Double latitude;
+
+    public Settings(String notif_type, String start_time, String end_time, Double longitude, Double latitude) {
+        this.notif_type = notif_type;
+        this.start_time = start_time;
+        this.end_time = end_time;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
 }

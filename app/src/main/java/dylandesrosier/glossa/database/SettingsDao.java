@@ -14,6 +14,9 @@ public interface SettingsDao {
     @Query("SELECT * FROM settings")
     List<Settings> getSettings();
 
+    @Query("DELETE FROM settings")
+    void deleteAllSettings();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSettings(Settings settings);
 
