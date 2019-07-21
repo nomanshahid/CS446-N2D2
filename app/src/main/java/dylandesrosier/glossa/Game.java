@@ -126,16 +126,8 @@ public class Game extends AppCompatActivity {
     }
 
     public void onButtonClick(Button b) {
-        KoreanLetter k = appDb.koreanLetterDao().getLetter(mainLetter.getCharacter());
-        if (k == null) {
-            k = new KoreanLetter(mainLetter.getCharacter(), 1, 0);
-        } else {
-            k.num_seen++;
-        }
-
         if (b.getText().toString() == mainLetter.getPronunciation()) {
             // correct
-            k.num_correct++;
             currLevel++;
             gameLetters.remove(mainLetter);
         } else {
@@ -144,7 +136,8 @@ public class Game extends AppCompatActivity {
             b.setBackgroundResource(R.drawable.game_option_button_incorrect);
         }
 
-        appDb.koreanLetterDao().updateLetter(k);
+        this.updateLetterStats(b);
+
         mainButton.setBackgroundResource(R.drawable.game_option_button_correct);
         levelTextView.setText(Integer.toString(currLevel - 1));
 
@@ -155,6 +148,23 @@ public class Game extends AppCompatActivity {
                 determineNextStage();
             }
         }, 1000);
+    }
+
+    private void updateLetterStats(Button b){
+        if (this.language instanceof Korean){
+            KoreanLetter k = appDb.koreanLetterDao().getLetter(mainLetter.getCharacter());
+            if (k == null) {
+                k = new KoreanLetter(mainLetter.getCharacter(), 1, 0);
+            } else {
+                k.num_seen++;
+            }
+
+            if (b.getText().toString() == mainLetter.getPronunciation()) {
+                k.num_correct++;
+            }
+
+            appDb.koreanLetterDao().updateLetter(k);
+        }
     }
 
     private void setupButton(Button b) {
