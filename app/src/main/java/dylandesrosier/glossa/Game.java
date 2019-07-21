@@ -10,6 +10,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import java.util.*;
 
+import dylandesrosier.glossa.database.AppDatabase;
+import dylandesrosier.glossa.database.KoreanLetter;
+
 public class Game extends AppCompatActivity {
     private final int maxLetters = 5;
     private int currLevel = 1;
@@ -17,6 +20,8 @@ public class Game extends AppCompatActivity {
     private Letter mainLetter = null;
     private Button mainButton = null;
     private String languageSelection;
+
+    private AppDatabase appDb;
 
     private Language language;
 
@@ -28,6 +33,8 @@ public class Game extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        appDb = AppDatabase.getInstance(this);
 
         // Set the language label to the selected language
         language = (Language) getIntent().getSerializableExtra("language");
@@ -119,13 +126,25 @@ public class Game extends AppCompatActivity {
     }
 
     public void onButtonClick(Button b) {
+        KoreanLetter k = appDb.koreanLetterDao().getLetter(mainLetter.getCharacter());
+        if (k == null) {
+            k = new KoreanLetter(mainLetter.getCharacter(), 1, 0);
+        } else {
+            k.num_seen++;
+        }
+
         if (b.getText().toString() == mainLetter.getPronunciation()) {
+            // correct
+            k.num_correct++;
             currLevel++;
             gameLetters.remove(mainLetter);
         } else {
+            // wrong
             wrongCount++;
             b.setBackgroundResource(R.drawable.game_option_button_incorrect);
         }
+
+        appDb.koreanLetterDao().updateLetter(k);
         mainButton.setBackgroundResource(R.drawable.game_option_button_correct);
         levelTextView.setText(Integer.toString(currLevel - 1));
 
