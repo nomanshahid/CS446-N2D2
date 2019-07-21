@@ -1,4 +1,5 @@
 <resources>
+    <string name="CHANNEL_ID">quiz_notifications</string>
     <string name="app_name">Glossa</string>
     <string name="app_caption">Talk to the world.</string>
     <string name="alphabet_button_text">Alphabet</string>
