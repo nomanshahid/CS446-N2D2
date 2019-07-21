@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,17 +19,22 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import dylandesrosier.glossa.database.AppDatabase;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<LanguageItem> languageList;
     private LanguageSpinnerAdapter languageSpinnerAdapter;
     private String languageSelection;
+    private AppDatabase appDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        appDb = AppDatabase.getInstance(this);
         createNotificationChannel();
         configureQuizNotification();
         initLanguageList();
@@ -90,15 +96,27 @@ public class MainActivity extends AppCompatActivity {
 
     /* Helper to show quiz notification at a specific time */
     public void configureQuizNotification() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 3);
-        calendar.set(Calendar.MINUTE, 15);
-
         Intent intent = new Intent(this, NotificationReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        String notifType = getNotifType();
+
+        switch (notifType) {
+            case "NONE":
+                break;
+            case "TIME": // Time-based notifications
+                Settings.TimeRange timeRange = getTime();
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeRange.startTime.substring(0,2)));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeRange.startTime.substring(4)));
+
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+                break;
+            case "LOCATION": // Location-based notifications
+                break;
+            default:
+        }
     }
 
     /* Standard code from https://developer.android.com/training/notify-user/build-notification.html */
@@ -144,5 +162,29 @@ public class MainActivity extends AppCompatActivity {
         languageList.add(new LanguageItem(this.getResources().getString(R.string.korean_text), R.drawable.south_korea_flag));
         languageList.add(new LanguageItem(this.getResources().getString(R.string.bengali_text), R.drawable.bangladesh_flag));
         languageList.add(new LanguageItem(this.getResources().getString(R.string.english_text), R.drawable.uk_flag));
+    }
+
+    // Helpers for retrieving info from DB
+    private String getNotifType() {
+        List<dylandesrosier.glossa.database.Settings> settingsList = appDb.settingsDao().getSettings();
+
+        if (settingsList.size() > 0) {
+            dylandesrosier.glossa.database.Settings curSettings = settingsList.get(0);
+            return curSettings.notif_type;
+        } else {
+            return "NONE";
+        }
+    }
+
+    private Settings.TimeRange getTime() {
+        List<dylandesrosier.glossa.database.Settings> settingsList = appDb.settingsDao().getSettings();
+        Settings.TimeRange timeRange = new Settings.TimeRange();
+        if (settingsList.size() > 0) {
+            dylandesrosier.glossa.database.Settings curSettings = settingsList.get(0);
+            timeRange.startTime = curSettings.start_time;
+            timeRange.endTime = curSettings.end_time;
+        }
+
+        return timeRange;
     }
 }

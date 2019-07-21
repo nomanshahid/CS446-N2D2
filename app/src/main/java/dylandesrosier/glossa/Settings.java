@@ -36,7 +36,7 @@ import java.util.List;
 import dylandesrosier.glossa.database.AppDatabase;
 
 public class Settings extends AppCompatActivity {
-    private static class TimeRange {
+    public static class TimeRange {
         String startTime;
         String endTime;
 
