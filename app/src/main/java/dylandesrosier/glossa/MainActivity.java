@@ -171,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void openAccount() {
         Intent intent = new Intent(getApplicationContext(), Account.class);
+        intent.putExtra("language_selection", languageSelection);
+        intent.putExtra("language", langModel);
         startActivity(intent);
     }
 
