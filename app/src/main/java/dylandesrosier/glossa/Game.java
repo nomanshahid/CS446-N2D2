@@ -80,6 +80,7 @@ public class Game extends AppCompatActivity {
 
         letters.add(mainLetter);
         characterView.setText(Character.toString(mainLetter.getCharacter()));
+        characterView.setTextColor(getColor(R.color.DarkGrey));
 
         ArrayList<Letter> options = language.getOptionLetters(mainLetter);
         letters.add(options.get(0));
@@ -93,6 +94,7 @@ public class Game extends AppCompatActivity {
                 mainButton = b;
             }
             b.setText(letters.get(i).getPronunciation());
+            b.setTextColor(getColor(R.color.DarkGrey));
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

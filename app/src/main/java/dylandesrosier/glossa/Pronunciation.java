@@ -79,6 +79,7 @@ public class Pronunciation extends AppCompatActivity {
 
         TextView character = findViewById(R.id.character_text);
         character.setText(letter);
+        character.setTextColor(getColor(R.color.DarkGrey));
         TextView pronun = findViewById(R.id.pronunciation);
         pronun.setText(pronunciation);
 

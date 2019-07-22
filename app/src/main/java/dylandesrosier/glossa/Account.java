@@ -66,6 +66,8 @@ public class Account extends AppCompatActivity {
             letterTextView.setText(letter.letter.toString());
             float acc = letter.num_correct / (float) letter.num_seen;
             accuracyText.setText(String.format("%d%%", Math.round(acc * 100)));
+            letterTextView.setTextColor(getColor(R.color.DarkGrey));
+            accuracyText.setTextColor(getColor(R.color.DarkGrey));
 
             statLayout.addView(statRowLayout);
         }
