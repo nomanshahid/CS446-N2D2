@@ -15,6 +15,7 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /* Helper class to display quiz notification at specific location */
@@ -96,13 +97,25 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void showNotification(Context context) {
+        String currLang = "Korean"; //intent.getStringExtra("language_selection");
+        Language langModel = new Korean();// (Language) intent.getSerializableExtra("language");;
+        Character currChar = langModel.getFirstGameLetter().getCharacter();
+        ArrayList<Letter> currOptions = langModel.getOptionLetters(langModel.getFirstGameLetter());
+        currOptions.add(langModel.getFirstGameLetter());
+        Collections.shuffle(currOptions);
+
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent quizIntent = new Intent(context, MainActivity.class); // TODO: this is where we go to the quiz question
+        Intent quizIntent = new Intent(context, Game.class);
+        quizIntent.putExtra("language_selection", currLang);
+        quizIntent.putExtra("language", langModel);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 100, quizIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-        String testOptions = "What sound does 'Oh' make in Korean?\n1. Ou\n2. Ah\n3. Ee\n4. Ay\nTap to answer in the Glossa app.";
+        String notifMsg = String.format("What sound does '%s' make in %s?", currChar, currLang);
+        for (int i = 0; i < currOptions.size(); i++) {
+            notifMsg += String.format("\n%d. %s", i+1, currOptions.get(i).getPronunciation());
+        }
+        notifMsg += "\nTap to answer in the Glossa app.";
 
         int notificationId = 001;
         Notification notification = new NotificationCompat.Builder(context, context.getString(R.string.CHANNEL_ID))
@@ -110,10 +123,10 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.south_korea_flag))
                 .setContentIntent(pendingIntent)
                 .setContentTitle("Quiz Time!")
-                .setContentText("What sound does 'Oh' make? Expand to view options.")
+                .setContentText(String.format("What sound does '%s' make? Expand to view options.", currChar))
                 .setVibrate(new long[]{Notification.DEFAULT_VIBRATE})
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(testOptions))
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(notifMsg))
                 .setAutoCancel(true)
                 .build();
         notificationManager.notify(notificationId, notification);

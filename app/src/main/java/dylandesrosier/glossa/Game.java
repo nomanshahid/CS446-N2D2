@@ -77,7 +77,7 @@ public class Game extends AppCompatActivity {
         mainLetter = gameLetters.get(0);
         // pick the correct value and settext in main character window
         Collections.shuffle(gameLetters);
-        
+
         letters.add(mainLetter);
         characterView.setText(Character.toString(mainLetter.getCharacter()));
 

@@ -247,6 +247,8 @@ public class MainActivity extends AppCompatActivity {
             return mGeofencePendingIntent;
         }
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
+        intent.putExtra("language_selection", languageSelection);
+        intent.putExtra("language", langModel);
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
         // calling addGeofences() and removeGeofences().
         mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.
