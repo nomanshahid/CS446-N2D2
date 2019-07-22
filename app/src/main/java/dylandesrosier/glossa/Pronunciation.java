@@ -3,6 +3,11 @@ package dylandesrosier.glossa;
 import android.Manifest;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
+import android.media.AudioFormat;
+import android.os.Environment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.ImageButton;
@@ -14,6 +19,8 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
 import androidx.core.app.ActivityCompat;
+import android.support.v4.app.ActivityCompat;
+import android.widget.Toast;
 
 import com.loopj.android.http.*;
 
@@ -25,26 +32,39 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import cz.msebera.android.httpclient.Header;
+import omrecorder.AudioChunk;
+import omrecorder.AudioRecordConfig;
+import omrecorder.OmRecorder;
+import omrecorder.PullTransport;
+import omrecorder.PullableSource;
+import omrecorder.Recorder;
+import omrecorder.WriteAction;
 
 public class Pronunciation extends AppCompatActivity {
     private Integer score;
     private String letter;
     private String pronunciation;
+    private Boolean isPlaying = false;
 
     // Recording Audio
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+
     private static String fileName = null;
     private static final String LOG_TAG = "AudioRecordTest";
+    private static final int REQUEST_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
-    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+    private boolean permissionToStoreAccepted = false;
+    private boolean permissionToReadAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 
     private ImageButton recordButton = null;
-    private MediaRecorder recorder = null;
     private ImageButton playButton = null;
     private MediaPlayer player = null;
 
+    private omrecorder.Recorder wavRecorder = null;
+
     // Request
     private String url = "https://phoneme-recognition.herokuapp.com/getScore";
+//    private String url = "http://d40a219f.ngrok.io/getScore";
 
 
     @Override
@@ -52,7 +72,11 @@ public class Pronunciation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pronunciation);
 
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION );
+        }
 
         letter = getIntent().getStringExtra("letter");
         pronunciation = getIntent().getStringExtra("pronunciation");
@@ -62,133 +86,155 @@ public class Pronunciation extends AppCompatActivity {
         TextView pronun = findViewById(R.id.pronunciation);
         pronun.setText(pronunciation);
 
-        fileName = getExternalCacheDir().getAbsolutePath();
-        fileName += "/recording.mpeg4";
+        fileName = "recording.wav";
 
         recordButton = findViewById(R.id.recordButton);
         recordButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent e) {
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    onRecord(true);
+                    try {
+                        onRecord(true);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    onRecord(false);
+                    try {
+                        onRecord(false);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
                 return true;
             }
         });
 
         playButton = findViewById(R.id.play);
-        playButton.setOnTouchListener(new View.OnTouchListener() {
+        playButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent e) {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    onPlay(true);
-                } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    onPlay(false);
+            public void onClick(View view) {
+                if (isPlaying) {
+                    return;
+                } else {
+                    isPlaying = true;
+                    player = new MediaPlayer();
+                    try {
+                        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mediaPlayer) {
+                                isPlaying = false;
+                            }
+                        });
+                        player.setDataSource(String.format("%s/%s",Environment.getExternalStorageDirectory().getAbsolutePath(), fileName));
+                        player.prepare();
+                        player.start();
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, "prepare() failed");
+                        isPlaying = false;
+                    }
                 }
-                return true;
             }
         });
 
+        wavRecorder = OmRecorder.wav(
+                new PullTransport.Noise(mic(),
+                        new PullTransport.OnAudioChunkPulledListener() {
+                            @Override public void onAudioChunkPulled(AudioChunk audioChunk) {
+                                animateVoice((float) (audioChunk.maxAmplitude() / 200.0));
+                            }
+                        },
+                        new WriteAction.Default(),
+                        new Recorder.OnSilenceListener() {
+                            @Override public void onSilence(long silenceTime) {
+                                Log.e("silenceTime", String.valueOf(silenceTime));
+                            }
+                        }, 200
+                ), file()
+        );
+    }
+
+    @NonNull private File file() {
+        return new File(Environment.getExternalStorageDirectory(), fileName);
+    }
+
+    private void animateVoice(final float maxPeak) {
+        recordButton.animate().scaleX(1 + maxPeak).scaleY(1 + maxPeak).setDuration(10).start();
+    }
+
+    private PullableSource mic() {
+        return new PullableSource.NoiseSuppressor(
+                new PullableSource.Default(
+                        new AudioRecordConfig.Default(
+                                MediaRecorder.AudioSource.MIC, AudioFormat.ENCODING_PCM_16BIT,
+                                AudioFormat.CHANNEL_IN_MONO, 44100
+                        )
+                )
+        );
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        switch (requestCode){
+            case REQUEST_PERMISSION:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                permissionToStoreAccepted  = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                permissionToReadAccepted  = grantResults[2] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
-        if (!permissionToRecordAccepted) finish();
+        if (!permissionToRecordAccepted || !permissionToStoreAccepted || !permissionToReadAccepted) finish();
     }
 
-    private void onRecord(boolean start) {
+    private void onRecord(boolean start) throws IOException {
         if (start) {
-            startRecording();
+            // Create new instance w a blank file
+            wavRecorder = OmRecorder.wav(
+                    new PullTransport.Noise(mic(),
+                            new PullTransport.OnAudioChunkPulledListener() {
+                                @Override public void onAudioChunkPulled(AudioChunk audioChunk) {
+                                    animateVoice((float) (audioChunk.maxAmplitude() / 200.0));
+                                }
+                            },
+                            new WriteAction.Default(),
+                            new Recorder.OnSilenceListener() {
+                                @Override public void onSilence(long silenceTime) {
+                                    Log.e("silenceTime", String.valueOf(silenceTime));
+                                }
+                            }, 200
+                    ), file()
+            );
+            wavRecorder.startRecording();
         } else {
-            stopRecording();
+            // Stop recording and send data to server
+            wavRecorder.stopRecording();
+            getScore();
         }
-    }
-
-    private void onPlay(boolean start) {
-        if (start) {
-            startPlaying();
-        } else {
-            stopPlaying();
-        }
-    }
-
-    private void startPlaying() {
-        player = new MediaPlayer();
-        try {
-            player.setDataSource(fileName);
-            player.prepare();
-            player.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
-
-    private void stopPlaying() {
-        player.release();
-        player = null;
-    }
-
-    private void startRecording() {
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-
-        recorder.setOutputFile(fileName);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
-        try {
-            recorder.prepare();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-
-        TextView r = findViewById(R.id.recordingIcon);
-        r.setVisibility(View.VISIBLE);
-
-        recorder.start();
-    }
-
-    private void stopRecording() {
-        TextView r = findViewById(R.id.recordingIcon);
-        r.setVisibility(View.INVISIBLE);
-
-        recorder.stop();
-        recorder.release();
-        recorder = null;
-
-        getScore();
     }
 
     private void getScore() {
         // Build request
-        File myFile = new File(fileName);
+
+        File myFile = new File(Environment.getExternalStorageDirectory(), fileName);
         RequestParams params = new RequestParams();
+
         try {
             params.put("audio", myFile);
-            params.put("pronunciation", pronunciation);
-            params.put("letter", letter);
-        } catch (FileNotFoundException e) {
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
         }
+        params.add("pronunciation", pronunciation);
+        params.add("letter", letter);
 
         // send request
         AsyncHttpClient client = new AsyncHttpClient();
         client.post(url, params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                Log.d(LOG_TAG, "sent");
                 try {
                     JSONObject r = new JSONObject(new String(response));
                     Log.d(LOG_TAG, r.getString("score"));
                     TextView score = findViewById(R.id.score);
-                    score.setText(String.format("%s/100", r.getString("score")));
+                    score.setText(String.format("%s", r.getString("score")));
                     score.setVisibility(View.VISIBLE);
 
                 } catch (JSONException e) {
@@ -206,21 +252,4 @@ public class Pronunciation extends AppCompatActivity {
             }
         });
     }
-
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (recorder != null) {
-            recorder.release();
-            recorder = null;
-        }
-
-        if (player != null) {
-            player.release();
-            player = null;
-        }
-    }
-
-
 }

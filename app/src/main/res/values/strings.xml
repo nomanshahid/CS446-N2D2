@@ -20,4 +20,5 @@
     <string name="long_press_map">Press and hold on a point to save location</string>
     <string name="save_location">Learning location set!</string>
     <string name="learning_location">Learning Location</string>
+    <string name="scoring">Aim for 0</string>
 </resources>
