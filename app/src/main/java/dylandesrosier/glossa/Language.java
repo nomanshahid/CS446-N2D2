@@ -25,4 +25,6 @@ public class Language implements Serializable {
 
     public ArrayList<Letter> getGameLetters(int limit) { return new ArrayList<>(); };
     public ArrayList<Letter> getAllGameLetters() { return new ArrayList<>(); };
+    public Letter getFirstGameLetter() { return null; };
+    public ArrayList<Letter> getOptionLetters(Letter exclude) { return null; };
 }

@@ -25,7 +25,6 @@ public class Game extends AppCompatActivity {
 
     private Language language;
 
-    ArrayList<Letter> allGameLetters = new ArrayList<>();
     ArrayList<Letter> gameLetters = new ArrayList<>();
 
     private TextView levelTextView;
@@ -55,7 +54,6 @@ public class Game extends AppCompatActivity {
 
         // initialize game variables
         gameLetters = language.getGameLetters(maxLetters);
-        allGameLetters = language.getAllGameLetters();
 
         // Initialize game stage
         generateStage();
@@ -83,12 +81,9 @@ public class Game extends AppCompatActivity {
         letters.add(mainLetter);
         characterView.setText(Character.toString(mainLetter.getCharacter()));
 
-        // pick 2 other random values
-        allGameLetters.remove(mainLetter);
-        Collections.shuffle(allGameLetters);
-        letters.add(allGameLetters.get(0));
-        letters.add(allGameLetters.get(1));
-        allGameLetters.add(mainLetter);
+        ArrayList<Letter> options = language.getOptionLetters(mainLetter);
+        letters.add(options.get(0));
+        letters.add(options.get(1));
 
         // cycle through letters and assign to random button
         for (int i = 0; i < 3; i++) {

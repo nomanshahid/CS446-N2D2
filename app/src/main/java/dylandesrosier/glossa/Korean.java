@@ -1,6 +1,7 @@
 package dylandesrosier.glossa;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Korean extends Language {
@@ -89,12 +90,25 @@ public class Korean extends Language {
         return (ArrayList<Letter>) allGameLetters.clone();
     }
 
+    @Override
+    public Letter getFirstGameLetter() {
+        return gameLetters.get(gameLetters.size() - 1);
+    }
+
+    @Override
+    public ArrayList<Letter> getOptionLetters(Letter exclude) {
+        allGameLetters.remove(exclude);
+
+        Collections.shuffle(allGameLetters);
+        ArrayList<Letter> otherOptions = new ArrayList<>(Arrays.asList(allGameLetters.get(0), allGameLetters.get(1)));
+
+        allGameLetters.add(exclude);
+        return otherOptions;
+    }
+
     private void generateGameLetters() {
         if (internalLevel == 0) {
             gameLetters = new ArrayList<>(letters.values());
-            // TODO: DELTE THIS LINE AS ITS FOR TESTING
-
-            gameLetters = new ArrayList<>(gameLetters.subList(0, 10));
         } else {
             for (Letter c: consonants) {
                 for (Letter v: vowels) {
@@ -105,6 +119,5 @@ public class Korean extends Language {
         }
         Collections.shuffle(gameLetters);
         allGameLetters = (ArrayList<Letter>) gameLetters.clone();
-
     }
 }
