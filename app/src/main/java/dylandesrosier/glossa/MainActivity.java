@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
     public void configureQuizNotification() {
         Intent intent = new Intent(this, NotificationReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        intent.putExtra("language_selection", languageSelection);
+        intent.putExtra("language", langModel);
 
         String notifType = getNotifType();
 

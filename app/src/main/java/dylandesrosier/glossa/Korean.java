@@ -6,7 +6,7 @@ import java.util.Collections;
 
 public class Korean extends Language {
 
-    private int internalLevel = -1;
+    private int internalLevel = 0;
 
     public Korean(){
         letters.put('ㄱ', new Letter('ㄱ', "ga", 0,"Consonant"));
@@ -55,6 +55,8 @@ public class Korean extends Language {
         consonants = filterMap("Consonant");
         vowels = filterMap("Vowel");
         gameLetters = new ArrayList<>();
+
+        generateGameLetters();
     }
 
     private ArrayList<Letter> filterMap(String category) {
