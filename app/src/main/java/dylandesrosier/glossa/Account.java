@@ -4,13 +4,29 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import java.util.List;
+
+import dylandesrosier.glossa.database.AppDatabase;
+import dylandesrosier.glossa.database.KoreanLetter;
 
 public class Account extends AppCompatActivity {
+    private AppDatabase appDb;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +46,20 @@ public class Account extends AppCompatActivity {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
+
+        appDb = AppDatabase.getInstance(this);
+        List<KoreanLetter> letters = appDb.koreanLetterDao().getLetters();
+        LinearLayout statLayout = findViewById(R.id.statLayout);
+        for(final KoreanLetter letter : letters) {
+            View statRowLayout = LayoutInflater.from(this).inflate(R.layout.stat_row, null, false);
+
+            TextView letterTextView = statRowLayout.findViewById(R.id.letterTextView);
+
+            letterTextView.setText(letter.letter);
+
+            statLayout.addView(statRowLayout);
+        }
+
 
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }

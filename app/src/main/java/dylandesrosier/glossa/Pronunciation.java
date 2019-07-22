@@ -3,11 +3,8 @@ package dylandesrosier.glossa;
 import android.Manifest;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Context;
 import android.media.AudioFormat;
 import android.os.Environment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.ImageButton;
@@ -19,8 +16,7 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
 import androidx.core.app.ActivityCompat;
-import android.support.v4.app.ActivityCompat;
-import android.widget.Toast;
+import androidx.core.content.ContextCompat;
 
 import com.loopj.android.http.*;
 
