@@ -44,7 +44,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.south_korea_flag))
                 .setContentIntent(pendingIntent)
                 .setContentTitle("Quiz Time!")
-                .setContentText("What sound does 'Oh' make? Expand to view options.")
+                .setContentText(String.format("What sound does '%s' make? Expand to view options.", currChar))
                 .setVibrate(new long[]{Notification.DEFAULT_VIBRATE})
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(notifMsg))
