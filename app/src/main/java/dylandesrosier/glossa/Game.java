@@ -74,10 +74,10 @@ public class Game extends AppCompatActivity {
         ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(option1, option2, option3));
         ArrayList<Letter> letters = new ArrayList<>();
 
+        mainLetter = gameLetters.get(0);
         // pick the correct value and settext in main character window
         Collections.shuffle(gameLetters);
-
-        mainLetter = gameLetters.get(0);
+        
         letters.add(mainLetter);
         characterView.setText(Character.toString(mainLetter.getCharacter()));
 
