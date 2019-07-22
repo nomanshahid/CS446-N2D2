@@ -41,6 +41,7 @@ public class Pronunciation extends AppCompatActivity {
     private Integer score;
     private String letter;
     private String pronunciation;
+    private Boolean isPlaying = false;
 
     // Recording Audio
 
@@ -54,15 +55,14 @@ public class Pronunciation extends AppCompatActivity {
 
 
     private ImageButton recordButton = null;
-    private MediaRecorder recorder = null;
     private ImageButton playButton = null;
     private MediaPlayer   player = null;
 
     private omrecorder.Recorder wavRecorder = null;
 
     // Request
-//    private String url = "https://phoneme-recognition.herokuapp.com/getScore";
-    private String url = "https://ae53e8bd.ngrok.io/getScore";
+    private String url = "https://phoneme-recognition.herokuapp.com/getScore";
+//    private String url = "http://d40a219f.ngrok.io/getScore";
 
 
     @Override
@@ -83,9 +83,6 @@ public class Pronunciation extends AppCompatActivity {
         character.setText(letter);
         TextView pronun = findViewById(R.id.pronunciation);
         pronun.setText(pronunciation);
-
-//        fileName = getExternalCacheDir().getAbsolutePath();
-//        fileName += "/recording.wav";
 
         fileName = "recording.wav";
 
@@ -111,15 +108,29 @@ public class Pronunciation extends AppCompatActivity {
         });
 
         playButton = findViewById(R.id.play);
-        playButton.setOnTouchListener(new View.OnTouchListener() {
+        playButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent e) {
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    onPlay(true);
-                } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    onPlay(false);
+            public void onClick(View view) {
+                if (isPlaying) {
+                    return;
+                } else {
+                    isPlaying = true;
+                    player = new MediaPlayer();
+                    try {
+                        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mediaPlayer) {
+                                isPlaying = false;
+                            }
+                        });
+                        player.setDataSource(String.format("%s/%s",Environment.getExternalStorageDirectory().getAbsolutePath(), fileName));
+                        player.prepare();
+                        player.start();
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, "prepare() failed");
+                        isPlaying = false;
+                    }
                 }
-                return true;
             }
         });
 
@@ -175,69 +186,29 @@ public class Pronunciation extends AppCompatActivity {
 
     private void onRecord(boolean start) throws IOException {
         if (start) {
-//            startRecording();
+            // Create new instance w a blank file
+            wavRecorder = OmRecorder.wav(
+                    new PullTransport.Noise(mic(),
+                            new PullTransport.OnAudioChunkPulledListener() {
+                                @Override public void onAudioChunkPulled(AudioChunk audioChunk) {
+                                    animateVoice((float) (audioChunk.maxAmplitude() / 200.0));
+                                }
+                            },
+                            new WriteAction.Default(),
+                            new Recorder.OnSilenceListener() {
+                                @Override public void onSilence(long silenceTime) {
+                                    Log.e("silenceTime", String.valueOf(silenceTime));
+                                }
+                            }, 200
+                    ), file()
+            );
             wavRecorder.startRecording();
         } else {
-//            stopRecording();
+            // Stop recording and send data to server
             wavRecorder.stopRecording();
             getScore();
         }
     }
-
-    private void onPlay(boolean start) {
-        if (start) {
-            startPlaying();
-        } else {
-            stopPlaying();
-        }
-    }
-
-    private void startPlaying() {
-        player = new MediaPlayer();
-        try {
-            player.setDataSource(fileName);
-            player.prepare();
-            player.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
-
-    private void stopPlaying() {
-        player.release();
-        player = null;
-    }
-
-//    private void startRecording() {
-//        recorder = new MediaRecorder();
-//        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//
-//        recorder.setOutputFile(fileName);
-//        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-//        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-//
-//        try {
-//            recorder.prepare();
-//        } catch (IOException e) {
-//            Log.e(LOG_TAG, "prepare() failed");
-//        }
-//
-//        TextView r = findViewById(R.id.recordingIcon);
-//        r.setVisibility(View.VISIBLE);
-//
-//        recorder.start();
-//    }
-//
-//    private void stopRecording() {
-//        TextView r = findViewById(R.id.recordingIcon);
-//        r.setVisibility(View.INVISIBLE);
-//
-//        recorder.stop();
-//        recorder.release();
-//        recorder = null;
-//
-//        getScore();
-//    }
 
     private void getScore() {
         // Build request
@@ -245,13 +216,13 @@ public class Pronunciation extends AppCompatActivity {
         File myFile = new File(Environment.getExternalStorageDirectory(), fileName);
         RequestParams params = new RequestParams();
 
-        params.put("pronunciation", pronunciation);
-        params.put("letter", letter);
         try {
             params.put("audio", myFile);
         } catch(FileNotFoundException e) {
             e.printStackTrace();
         }
+        params.add("pronunciation", pronunciation);
+        params.add("letter", letter);
 
         Log.d(LOG_TAG, this.getExternalFilesDir(null).getAbsolutePath());
         Log.d(LOG_TAG, String.format("audio %b", params.has("audio")));
@@ -267,7 +238,7 @@ public class Pronunciation extends AppCompatActivity {
                     JSONObject r = new JSONObject(new String(response));
                     Log.d(LOG_TAG, r.getString("score"));
                     TextView score = findViewById(R.id.score);
-                    score.setText(String.format("%s/100", r.getString("score")));
+                    score.setText(String.format("%s", r.getString("score")));
                     score.setVisibility(View.VISIBLE);
 
                 } catch (JSONException e) {
@@ -285,22 +256,4 @@ public class Pronunciation extends AppCompatActivity {
             }
         });
     }
-
-
-
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        if (recorder != null) {
-//            recorder.release();
-//            recorder = null;
-//        }
-//
-//        if (player != null) {
-//            player.release();
-//            player = null;
-//        }
-//    }
-
-
 }
